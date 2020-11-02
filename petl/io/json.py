@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, division
 
-
 # standard library dependencies
 import io
 import json
 from json.encoder import JSONEncoder
+
 from petl.compat import PY2
-
-
+from petl.io.sources import read_source_from_arg, write_source_from_arg
 # internal dependencies
 from petl.util.base import data, Table, dicts as _dicts, iterpeek
-from petl.io.sources import read_source_from_arg, write_source_from_arg
 
 
 def fromjson(source, *args, **kwargs):
@@ -42,6 +40,34 @@ def fromjson(source, *args, **kwargs):
         | 'c' |   2 |
         +-----+-----+
 
+    Setting argument `lines` to `True` will enable to
+    infer the document as a JSON lines document. For more details about JSON lines
+    please visit https://jsonlines.org/.
+
+        >>> import petl as etl
+        >>> data_with_jlines = '''{"name": "Gilbert", "wins": [["straight", "7S"], ["one pair", "10H"]]}
+        ... {"name": "Alexa", "wins": [["two pair", "4S"], ["two pair", "9S"]]}
+        ... {"name": "May", "wins": []}
+        ... {"name": "Deloise", "wins": [["three of a kind", "5S"]]}'''
+        ...
+        >>> with open('example2.json', 'w') as f:
+        ...     f.write(data_with_jlines)
+        ...
+        223
+        >>> table2 = etl.fromjson('example2.json', lines=True)
+        >>> table2
+        +-----------+-------------------------------------------+
+        | name      | wins                                      |
+        +===========+===========================================+
+        | 'Gilbert' | [['straight', '7S'], ['one pair', '10H']] |
+        +-----------+-------------------------------------------+
+        | 'Alexa'   | [['two pair', '4S'], ['two pair', '9S']]  |
+        +-----------+-------------------------------------------+
+        | 'May'     | []                                        |
+        +-----------+-------------------------------------------+
+        | 'Deloise' | [['three of a kind', '5S']]               |
+        +-----------+-------------------------------------------+
+
     If your JSON file does not fit this structure, you will need to parse it
     via :func:`json.load` and select the array to treat as the data, see also
     :func:`petl.io.json.fromdicts`.
@@ -63,12 +89,12 @@ def fromjson(source, *args, **kwargs):
 
 
 class JsonView(Table):
-
     def __init__(self, source, *args, **kwargs):
         self.source = source
         self.missing = kwargs.pop('missing', None)
         self.header = kwargs.pop('header', None)
         self.sample = kwargs.pop('sample', 1000)
+        self.lines = kwargs.pop('lines', False)
         self.args = args
         self.kwargs = kwargs
 
@@ -79,10 +105,14 @@ class JsonView(Table):
                 f = io.TextIOWrapper(f, encoding='utf-8', newline='',
                                      write_through=True)
             try:
-                dicts = json.load(f, *self.args, **self.kwargs)
-                for row in iterdicts(dicts, self.header, self.sample,
-                                     self.missing):
-                    yield row
+                if self.lines:
+                    for row in iterjlines(f, self.header, self.missing):
+                        yield row
+                else:
+                    dicts = json.load(f, *self.args, **self.kwargs)
+                    for row in iterdicts(dicts, self.header, self.sample,
+                                         self.missing):
+                        yield row
             finally:
                 if not PY2:
                     f.detach()
@@ -139,6 +169,22 @@ class DictsView(Table):
 
     def __iter__(self):
         return iterdicts(self.dicts, self.header, self.sample, self.missing)
+
+
+def iterjlines(f, header, missing):
+    it = iter(f)
+
+    if header is None:
+        header = list()
+        peek, it = iterpeek(it, 1)
+        json_obj = json.loads(peek)
+        if hasattr(json_obj, 'keys'):
+            header += [k for k in json_obj.keys() if k not in header]
+    yield tuple(header)
+
+    for o in it:
+        json_obj = json.loads(o)
+        yield tuple(json_obj[f] if f in json_obj else missing for f in header)
 
 
 def iterdicts(dicts, header, sample, missing):

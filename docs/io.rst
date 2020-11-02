@@ -20,6 +20,8 @@ string it is interpreted as follows:
 * string ending with `.bz2` - read from file via bz2 decompression
 * any other string - read directly from file
 
+.. _io_extract_codec:
+
 Some helper classes are also available for reading from other types of
 file-like sources, e.g., reading data from a Zip file, a string or a
 subprocess, see the section on :ref:`io_helpers` below for more
@@ -46,6 +48,8 @@ follows:
 * string ending with `.gz` or `.bgz` - write to file via gzip decompression
 * string ending with `.bz2` - write to file via bz2 decompression
 * any other string - write directly to file
+
+.. _io_load_codec:
 
 Some helper classes are also available for writing to other types of
 file-like sources, e.g., writing to a Zip file or string buffer, see
@@ -183,6 +187,7 @@ Excel .xlsx files (openpyxl)
 
 .. autofunction:: petl.io.xlsx.fromxlsx
 .. autofunction:: petl.io.xlsx.toxlsx
+.. autofunction:: petl.io.xlsx.appendxlsx
 
 
 .. module:: petl.io.numpy
@@ -284,6 +289,52 @@ Text indexes (Whoosh)
 .. autofunction:: petl.io.whoosh.totextindex
 .. autofunction:: petl.io.whoosh.appendtextindex
 
+.. module:: petl.io.avro
+.. _io_avro:
+
+Avro files (fastavro)
+----------------------------
+
+.. note::
+
+    The following functions require `fastavro
+    <https://github.com/fastavro/fastavro>`_ to be
+    installed, e.g.::
+
+        $ pip install fastavro
+
+.. autofunction:: petl.io.avro.fromavro
+.. autofunction:: petl.io.avro.toavro
+.. autofunction:: petl.io.avro.appendavro
+
+.. literalinclude:: ../petl/test/io/test_avro_schemas.py
+   :name: logical_schema
+   :language: python
+   :caption: Avro schema for logical types 
+   :start-after: begin_logical_schema
+   :end-before: end_logical_schema
+
+.. literalinclude:: ../petl/test/io/test_avro_schemas.py
+   :name: nullable_schema
+   :language: python
+   :caption: Avro schema with nullable fields
+   :start-after: begin_nullable_schema
+   :end-before: end_nullable_schema
+
+.. literalinclude:: ../petl/test/io/test_avro_schemas.py
+   :name: array_schema
+   :language: python
+   :caption: Avro schema with array values in fields
+   :start-after: begin_array_schema
+   :end-before: end_array_schema
+
+.. literalinclude:: ../petl/test/io/test_avro_schemas.py
+   :name: complex_schema
+   :language: python
+   :caption: Example of recursive complex Avro schema
+   :start-after: begin_complex_schema
+   :end-before: end_complex_schema
+
 .. module:: petl.io.sources
 .. _io_helpers:
 
@@ -308,12 +359,55 @@ The behaviour of each source can usually be configured by passing arguments
 to the constructor, see the source code of the :mod:`petl.io.sources` module
 for full details.
 
+.. autoclass:: petl.io.sources.StdinSource
+.. autoclass:: petl.io.sources.StdoutSource
+.. autoclass:: petl.io.sources.MemorySource
+.. autoclass:: petl.io.sources.PopenSource
+
+.. _io_remotes:
+
+Remote I/O helper classes
+-------------------------
+
+The following classes are helpers for reading (``from...()``) and writing
+(``to...()``) functions transparently as a file-like source.
+
+There are no need to instantiate them. They are used in the mecanism described
+in :ref:`Extract <io_extract>` and :ref:`Load <io_load>`.
+
+It's possible to read and write just by prefixing the protocol (e.g: `s3://`)
+in the source path of the file.
+
+.. autoclass:: petl.io.remotes.RemoteSource
+.. autoclass:: petl.io.remotes.SMBSource
+
+.. _io_deprecated:
+
+Deprecated I/O helper classes
+-----------------------------
+
+The following helpers are deprecated and will be removed in a future version.
+
+It's functionality was replaced by helpers in :ref:`Remote helpers <io_remotes>`.
+
 .. autoclass:: petl.io.sources.FileSource
 .. autoclass:: petl.io.sources.GzipSource
 .. autoclass:: petl.io.sources.BZ2Source
 .. autoclass:: petl.io.sources.ZipSource
-.. autoclass:: petl.io.sources.StdinSource
-.. autoclass:: petl.io.sources.StdoutSource
 .. autoclass:: petl.io.sources.URLSource
-.. autoclass:: petl.io.sources.MemorySource
-.. autoclass:: petl.io.sources.PopenSource
+
+.. _io_custom_helpers:
+
+Custom I/O helper classes
+------------------------------
+
+For creating custom helpers for :ref:`remote I/O <io_remotes>` or
+`compression` use the following functions:
+
+.. autofunction:: petl.io.sources.register_reader
+.. autofunction:: petl.io.sources.register_writer
+.. autofunction:: petl.io.sources.get_reader
+.. autofunction:: petl.io.sources.get_writer
+
+See the source code of the classes in :mod:`petl.io.sources` module for
+more details.

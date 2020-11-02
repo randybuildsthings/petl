@@ -21,8 +21,8 @@ To verify the installation, the test suite can be run with `nose
     $ pip install nose
     $ nosetests -v petl
 
-:mod:`petl` is compatible with Python versions 2.6, 2.7 and 3.4, and
-has been tested under Linux and Windows operating systems.
+:mod:`petl` has been tested with Python versions 2.7 and 3.4-3.6 
+under Linux and Windows operating systems.
 
 .. _intro_dependencies:
 
@@ -32,13 +32,65 @@ Dependencies and extensions
 This package is written in pure Python and has no installation requirements
 other than the Python core modules.
 
-Some of the functions in this package require installation of third party
-packages. This is indicated in the relevant parts of the documentation.
-
 Some domain-specific and/or experimental extensions to :mod:`petl` are
 available from the petlx_ package.
 
 .. _petlx: http://petlx.readthedocs.org
+
+Some of the functions in this package require installation of third party
+packages. These packages are indicated in the relevant parts of the 
+documentation for each file format.
+
+Also is possible to install some of dependencies when installing `petl` by
+specifying optional extra features, e.g.::
+
+    $ pip install petl['avro', 'interval', 'remote']
+
+The available extra features are:
+
+db
+    For using records from :ref:`Databases <io_db>` with `SQLAlchemy`.
+
+    Note that is also required installing the package for the desired database.
+
+interval
+    For using :ref:`Interval transformations <transform_intervals>`
+    with `intervaltree`
+
+avro
+  For using :ref:`Avro files <io_avro>` with `fastavro`
+
+pandas
+  For using :ref:`DataFrames <io_pandas>` with `pandas`
+
+numpy
+  For using :ref:`Arrays <io_numpy>` with `numpy`
+
+xls
+  For using :ref:`Excel/LO files <io_xls>` with `xlrd`/`xlwt`
+
+xlsx
+  For using :ref:`Excel/LO files <io_xlsx>` with `openpyxl`
+
+xpath
+  For using :ref:`XPath expressions <io_xml>` with `lxml`
+
+bcolz
+  For using :ref:`Bcolz ctables <io_bcolz>` with `bcolz`
+
+whoosh
+  For using :ref:`Text indexes <io_whoosh>` with `whoosh`
+
+hdf5
+  For using :ref:`HDF5 files <io_pytables>` with `PyTables`.
+
+  Note that also are additional software to be installed.
+
+remote
+  For reading and writing from :ref:`Remote Sources <io_remotes>` with `fsspec`.
+
+  Note that `fsspec` also depends on other packages for providing support for 
+  each protocol as described in :class:`petl.io.remotes.RemoteSource`.
 
 .. _intro_design_goals:
 
@@ -220,7 +272,7 @@ HTML table if returned from a cell in an IPython notebook. The functions
 :func:`petl.util.vis.display` and :func:`petl.util.vis.displayall` also
 provide more control over rendering of tables within an IPython notebook.
 
-For examples of usage see the `repr_html notebook <http://nbviewer.ipython.org/github/alimanfoo/petl/blob/v1.0/repr_html.ipynb>`_.
+For examples of usage see the `repr_html notebook <https://nbviewer.jupyter.org/github/petl-developers/petl/blob/master/repr_html.ipynb>`_.
 
 .. _intro_executable:
 
@@ -354,9 +406,9 @@ e.g.::
 
 If you develop an extension for a data source that you think would also be
 useful for others, please feel free to submit a PR to the
-`petl GitHub repository <https://github.com/alimanfoo/petl>`_, or if it
+`petl GitHub repository <https://github.com/petl-developers/petl>`_, or if it
 is a domain-specific data source, the
-`petlx GitHub repository <https://github.com/alimanfoo/petlx>`_.
+`petlx GitHub repository <https://github.com/petl-developers/petlx>`_.
 
 .. _intro_caching:
 
@@ -386,46 +438,3 @@ turn on or off the caching of sorted data.
 There is also an explicit :func:`petl.util.materialise.cache` function, which
 can be used to cache in memory up to a configurable number of rows from any
 table.
-
-.. _intro_acknowledgments:
-
-Acknowledgments
----------------
-
-This package is maintained by Alistair Miles
-<alimanfoo@googlemail.com> with funding from the `MRC Centre for
-Genomics and Global Health <http://www.cggh.org>`_.
-
-The following people have contributed to the development of this
-package:
-
-* Alexander Stauber
-* Andreas Porevopoulos (`sv1jsb <https://github.com/sv1jsb>`_)
-* Andrew Kim (`andrewakim <https://github.com/andrewakim>`_)
-* Caleb Lloyd (`caleblloyd <https://github.com/caleblloyd>`_)
-* César Roldán (`ihuro <https://github.com/ihuro>`_)
-* Chris Lasher (`gotgenes <https://github.com/gotgenes>`_)
-* Dustin Engstrom (`engstrom <https://github.com/engstrom>`_)
-* Florent Xicluna (`florentx <https://github.com/florentx>`_)
-* Jonathan Camile (`deytao <https://github.com/deytao>`_)
-* Jonathan Moss (`a-musing-moose <https://github.com/a-musing-moose>`_)
-* Kenneth Borthwick
-* Krisztián Fekete (`krisztianfekete <https://github.com/krisztianfekete>`_)
-* Michael Rea (`rea725 <https://github.com/rea725>`_)
-* Olivier Macchioni (`omacchioni <https://github.com/omacchioni>`_)
-* Olivier Poitrey (`rs <https://github.com/rs>`_)
-* Paul Jensen (`psnj <https://github.com/psnj>`_)
-* Peder Jakobsen (`pjakobsen <https://github.com/pjakobsen>`_)
-* Phillip Knaus (`phillipknaus <https://github.com/phillipknauss>`_)
-* Richard Pearson (`podpearson <https://github.com/podpearson>`_)
-* Robert DeSimone (`icenine457 <https://github.com/icenine457>`_)
-* Roger Woodley (`rogerkwoodley <https://github.com/rogerkwoodley>`_)
-* Zach Palchick (`palchicz <https://github.com/palchicz>`_)
-* `adamsdarlingtower <https://github.com/adamsdarlingtower>`_
-* `imazor <https://github.com/imazor>`_
-* `james-unified <https://github.com/james-unified>`_
-* `Mgutjahr <https://github.com/Mgutjahr>`_
-* `shayh <https://github.com/shayh>`_
-* `thatneat <https://github.com/thatneat>`_
-* `titusz <https://github.com/titusz>`_
-* `zigen <https://github.com/zigen>`_

@@ -6,11 +6,14 @@ MANIFEST
 dist
 .ipynb_checkpoints/
 .idea
+.vscode
 .tox/
 example*.*
 .coverage
+.eggs
 tmp*
 env/
 spike*
 petl.egg-info
-
+petl/version.py
+pip-wheel-metadata

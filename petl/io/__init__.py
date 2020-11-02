@@ -23,7 +23,7 @@ from petl.io.db import fromdb, todb, appenddb
 
 from petl.io.xls import fromxls, toxls
 
-from petl.io.xlsx import fromxlsx, toxlsx
+from petl.io.xlsx import fromxlsx, toxlsx, appendxlsx
 
 from petl.io.numpy import fromarray, toarray, torecarray
 
@@ -35,3 +35,11 @@ from petl.io.whoosh import fromtextindex, searchtextindex, \
     searchtextindexpage, totextindex, appendtextindex
 
 from petl.io.bcolz import frombcolz, tobcolz, appendbcolz
+
+from petl.io.avro import fromavro, toavro, appendavro
+
+from petl.io.sources import register_codec, register_reader, register_writer
+
+from petl.io.remotes import RemoteSource
+
+from petl.io.remotes import SMBSource
